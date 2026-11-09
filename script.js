@@ -147,71 +147,6 @@ function setupTopbar() {
   window.addEventListener("scroll", onScroll, { passive: true });
 }
 
-function setupMobileMenu() {
-  const toggle = document.getElementById("menu-toggle");
-  const nav = document.getElementById("site-nav");
-  const overlay = document.getElementById("mobile-overlay");
-  if (!toggle || !nav || !overlay) return;
-
-  const close = () => {
-    document.body.classList.remove("menu-open");
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open menu");
-    overlay.hidden = true;
-    overlay.classList.remove("show");
-  };
-
-  const open = () => {
-    document.body.classList.add("menu-open");
-    toggle.setAttribute("aria-expanded", "true");
-    toggle.setAttribute("aria-label", "Close menu");
-    overlay.hidden = false;
-    requestAnimationFrame(() => overlay.classList.add("show"));
-  };
-
-  toggle.addEventListener("click", () => {
-    if (document.body.classList.contains("menu-open")) close();
-    else open();
-  });
-
-  overlay.addEventListener("click", close);
-  nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", close));
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
-  });
-}
-
-function setupDock() {
-  const links = Array.from(document.querySelectorAll(".mobile-dock a"));
-  if (!links.length) return;
-
-  const sections = [
-    { id: "top", el: document.getElementById("top") },
-    { id: "apps", el: document.getElementById("apps") },
-    { id: "skills", el: document.getElementById("skills") },
-    { id: "contact", el: document.getElementById("contact") },
-  ].filter((s) => s.el);
-
-  const setActive = (id) => {
-    links.forEach((link) => {
-      link.classList.toggle("active", link.dataset.dock === id);
-    });
-  };
-
-  const onScroll = () => {
-    const y = window.scrollY + window.innerHeight * 0.35;
-    let current = "top";
-    sections.forEach((section) => {
-      if (section.el.offsetTop <= y) current = section.id;
-    });
-    setActive(current);
-  };
-
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-}
-
 function setupSmoothAnchors() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {
@@ -221,7 +156,8 @@ function setupSmoothAnchors() {
       if (!target) return;
       e.preventDefault();
       const topbar = document.querySelector(".topbar");
-      const offset = (topbar ? topbar.offsetHeight : 0) + 12;
+      const isTopbarVisible = topbar && getComputedStyle(topbar).display !== "none";
+      const offset = (isTopbarVisible ? topbar.offsetHeight : 0) + 12;
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: "smooth" });
     });
@@ -232,6 +168,4 @@ document.getElementById("year").textContent = String(new Date().getFullYear());
 renderApps();
 setupReveal();
 setupTopbar();
-setupMobileMenu();
-setupDock();
 setupSmoothAnchors();
