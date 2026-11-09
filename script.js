@@ -87,19 +87,30 @@ function renderApps() {
   if (!grid) return;
 
   grid.innerHTML = apps
-    .map((app) => {
+    .map((app, i) => {
       const links = [];
+      const platforms = [];
       if (app.android) {
-        links.push(`<a href="${app.android}" target="_blank" rel="noopener">Google Play</a>`);
+        links.push(`<a class="store-btn play" href="${app.android}" target="_blank" rel="noopener"><span>Google Play</span></a>`);
+        platforms.push("Android");
       }
       if (app.ios) {
-        links.push(`<a href="${app.ios}" target="_blank" rel="noopener">App Store</a>`);
+        links.push(`<a class="store-btn apple" href="${app.ios}" target="_blank" rel="noopener"><span>App Store</span></a>`);
+        platforms.push("iOS");
       }
+      const index = String(i + 1).padStart(2, "0");
 
       return `
-        <article class="app-card reveal">
-          <h3>${app.title}</h3>
-          <p>${app.desc}</p>
+        <article class="app-item reveal">
+          <div class="app-item-glow" aria-hidden="true"></div>
+          <div class="app-item-head">
+            <span class="app-index">${index}</span>
+            <div class="app-item-title">
+              <h3>${app.title}</h3>
+              <p class="app-platforms">${platforms.join(" · ")}</p>
+            </div>
+          </div>
+          <p class="app-desc">${app.desc}</p>
           <div class="app-links">${links.join("")}</div>
         </article>
       `;
